@@ -3225,20 +3225,145 @@ protected get() = field.toUpperCase()</pre>
                     компиляции и запуска кода Kotlin для этого рецепта. Вы также можете использовать среду разработки
                     IntelliJ IDEA.</p>
                 <h3>Как это сделать...</h3>
-                <p>Давайте рассмотрим следующие шаги, где мы покажем, как передать переменное количество аргументов функции:</p>
+                <p>Давайте рассмотрим следующие шаги, где мы покажем, как передать переменное количество аргументов
+                    функции:</p>
                 <ol>
-                    <li><pre></pre></li>
-                    <li><pre></pre></li>
-                    <li><pre></pre></li>
-                    <li><pre></pre></li>
-                    <li><pre></pre></li>
-                    <li><pre></pre></li>
-                    <li><pre></pre></li>
+                    <li>Используя <code>vararg</code>, мы можем передать аргументы, разделенные запятыми, в функцию, где
+                        мы определили единственный аргумент для метода как <code>vararg</code>, это показано в следующем
+                        примере:
+                        <pre>fun main(args: Array&lt;String&gt;) {
+    someMethod("as","you","know","this","works")
+}
+
+fun someMethod(vararg a: String) {
+    for (a_ in a) {
+        println(a_)
+    }
+}</pre>
+                    </li>
+                    <li>Кроме того, если у вас уже есть массив значений, вы можете напрямую передать его с помощью
+                        оператора *:
+                        <pre>fun main(args: Array&lt;String&gt;) {
+    val list = arrayOf("as","you","know","this","works")
+    someMethod(*list)
+}
+
+fun someMethod(vararg a: String) {
+    for (a_ in a) {
+        println(a_)
+    }
+}</pre>
+                        <p>Таким образом, <code>vararg</code> говорит компилятору взять переданные аргументы и обернуть
+                            их в массив.</p>
+                    </li>
+                    <li>Оператор * просто указывает компилятору развернуть массив и передать его значения
+                        их в виде отдельных аргументов. Оператор * ставится перед именем массива.
+                    </li>
+                    <li>Однако часто нужно передавать другие аргументы, именованные аргументы и так далее. В следующем
+                        примере кода мы попытаемся передать другой аргумент, отличный от <code>vararg</code>:
+                        <pre>fun main(args: Array&lt;String&gt;) {
+    val list = arrayOf("as","you","know","this","works")
+    someMethod(3, *list)
+}
+
+fun someMethod(b: Int, vararg a: String) {
+    for (a_ in a) {
+        println(a_)
+    }
+}</pre>
+                    </li>
+                    <li>В следующем примере первый аргумент похож на тип <code>vararg</code>, но работает:
+                        <pre>fun main(args: Array&lt;String&gt;) {
+    someMethod("3", "as","you","know","this","works")
+}
+
+fun someMethod(b: String, vararg a: String) {
+    println("b: " + b)
+    for (a_ in a) {
+        println(a_)
+    }
+}</pre>
+                        <p>Вывод выглядит следующим образом:</p>
+                        <pre>b: 3
+as
+you
+know
+this
+works</pre>
+                    </li>
+                    <li>Поэтому, как правило, <code>vararg</code> - последний аргумент, но что, если мы хотим передать
+                        другие аргументы после <code>vararg</code>? Мы можем это сделать, но они должны быть
+                        именованными. Поэтому следующий код не компилируется:
+                        <pre>// does not compile
+fun main(args: Array&lt;String&gt;) {
+    someMethod("3", "as","you","know","this","works", "what")
+}
+
+fun someMethod(b: String, vararg a: String, c: String) {
+    println("b: " + b)
+    for (a_ in a) {
+        println(a_)
+    }
+    println("c: " + c)
+}</pre>
+                    </li>
+                    <li>Он не компилируется, потому что последняя строка, переданная в нем, считается частью <code>vararg</code>,
+                        и компилятор выдает ошибку, потому что мы не передали значение <code>с</code>. Чтобы сделать это
+                        правильно, нам нужно передать <code>с</code> в качестве именованного аргумента, как показано
+                        ниже:
+                        <pre>fun main(args: Array&lt;String&gt;) {
+    someMethod("3", "as","you","know","this","works", c = "what")
+}
+
+fun someMethod(b: String, vararg a: String, c: String) {
+    println("b: " + b)
+    for (a_ in a) {
+        println(a_)
+    }
+    println("c: " + c)
+}</pre>
+                        <p>Вывод выглядит следующим образом:</p>
+                        <pre>b: 3
+as
+you
+know
+this
+works
+c: what</pre>
+                    </li>
                 </ol>
                 <h3>Как это работает...</h3>
-                <p></p>
+                <p>Модификатор <code>vararg</code> указывает компилятору взять все аргументы, разделенные запятыми, и
+                    обернуть их в массив, в то время как оператор * разворачивает элементы массива и передает их в
+                    качестве аргументов.</p>
                 <h3>Это еще не все...</h3>
-                <p></p>
+                <p>Что, если мы хотим, чтобы первый аргумент имел значение по умолчанию, как в этом примере:</p>
+                <pre>fun main(args: Array&lt;String&gt;) {
+    someMethod("3", "as","you","know","this","works")
+}
+
+fun someMethod(b: String = "x", vararg a: String) {
+    println("b: " + b)
+    for (a_ in a) {
+        println(a_)
+    }
+}</pre>
+                <p>Мы хотим, чтобы все аргументы рассматривались как часть <code>vararg</code>, но компилятор читает
+                    первый аргумент как <code>b</code>. В этом случае именование переданных аргументов может решить
+                    проблему:</p>
+                <pre>fun main(args: Array&lt;String&gt;) {
+someMethod(a = *arrayOf("3", "as","you","know","this","works"))
+}
+
+fun someMethod(b: String = "x", vararg a: String) {
+    println("b: " + b)
+    for (a_ in a) {
+        println(a_)
+    }
+}</pre>
+                <p>В предыдущем коде компилятор понимает, что значение <code>b</code> не передается, и принимает
+                    значение по умолчанию. Точно так же, если вы хотите иметь два <code>vararg</code> в вашей функции,
+                    вам нужно будет передать их как именованные аргументы.</p>
                 <p><a href="index.html#content-book">К содержанию...</a></p>
                 <hr>
             </div>
