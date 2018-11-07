@@ -1,0 +1,5 @@
+.S{color:red}/* Строки красные */
+.func{color:blue}/* Юзер-функции синие */
+.C{color:orange}/* Комменты оранжевые */
+.keyword{font-weight:bold}/* Ключевые слова полужирные */
+.R{color:gray} /*Серые регвыражения */
